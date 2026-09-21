@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>尽览 LightSee · 轻量快捷的本地图片浏览与管理工具</title>
+<meta name="description" content="尽览 LightSee：Windows 本地看图软件。无广告、不联网、照片数据不出你的电脑。缩略图墙、星级/色标/标签、人脸聚类、OCR 搜索、照片地图、七套皮肤。">
+<!--
+  ════════════════════════════════════════════════════════════
+  尽览官网（GitHub Pages）· 使用说明
+  1. 版本号：修改下方 const APP_VERSION，或跑 publish.ps1 自动同步
+  2. 下载链接：搜索 REPLACE_GITHUB 与 REPLACE_MIRROR 两处，替换为真实地址
+  3. 截图：把真实界面截图命名为 main.png / viewer.png / map.png
+     放入本页同级 shots\ 目录即可自动显示（无需改代码）
+  4. 图标：lightsee-icon.png 与本页同级
+  ════════════════════════════════════════════════════════════
+-->
+<style>
+  :root{
+    --blue:#2b6de8; --blue-deep:#1d5fd6; --ink:#1c2733; --ink-2:#3d4a5c;
+    --ink-3:#6b7a8d; --bg:#f5f7fa; --card:#ffffff; --line:#e6ebf2;
+    --radius:16px; --shadow:0 1px 2px rgba(28,39,51,.04),0 8px 24px rgba(28,39,51,.06);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--blue);text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  /* ── 导航 ── */
+  nav{position:sticky;top:0;z-index:50;background:rgba(245,247,250,.82);
+    backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:28px;height:56px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;color:var(--ink)}
+  .brand img{width:26px;height:26px;border-radius:6px}
+  nav .links{margin-left:auto;display:flex;gap:24px;font-size:14px;color:var(--ink-2)}
+  nav .links a{color:var(--ink-2)}
+  nav .links a:hover{color:var(--blue)}
+
+  /* ── Hero ── */
+  header.hero{padding:88px 0 56px;text-align:center;
+    background:linear-gradient(180deg,#eaf2fd 0%,var(--bg) 100%)}
+  .hero h1{font-size:44px;line-height:1.25;letter-spacing:-.5px;font-weight:800}
+  .hero .sub{margin:18px auto 0;max-width:640px;font-size:18px;color:var(--ink-2)}
+  .badges{margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .badge{font-size:13px;padding:5px 14px;border-radius:999px;background:#fff;
+    border:1px solid var(--line);color:var(--ink-2);box-shadow:var(--shadow)}
+  .badge.ver{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+  .cta{margin-top:36px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:12px;
+    font-size:16px;font-weight:600;transition:transform .15s ease,box-shadow .15s ease}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-primary{background:var(--blue);color:#fff;box-shadow:0 6px 18px rgba(43,109,232,.32)}
+  .btn-primary:hover{background:var(--blue-deep)}
+  .btn-ghost{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow)}
+  .hint{margin-top:16px;font-size:13px;color:var(--ink-3)}
+
+  /* ── 截图 ── */
+  .shot-frame{margin:56px auto 0;max-width:920px;background:#fff;border:1px solid var(--line);
+    border-radius:18px;box-shadow:0 24px 60px rgba(28,39,51,.12);overflow:hidden}
+  .shot-bar{height:36px;background:#f0f3f7;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:7px;padding:0 14px}
+  .shot-bar i{width:11px;height:11px;border-radius:50%}
+  .shot-bar i:nth-child(1){background:#ff5f57}.shot-bar i:nth-child(2){background:#febc2e}.shot-bar i:nth-child(3){background:#28c840}
+  .shot-body{aspect-ratio:16/9.4;background:linear-gradient(135deg,#eef4fd,#f7fafd)}
+  .shot-body img{width:100%;height:100%;object-fit:cover;display:block}
+  .shot-body.empty{display:flex;align-items:center;justify-content:center;color:#9fb0c3;font-size:14px}
+  .shot-body.empty::after{content:attr(data-empty)}
+
+  /* ── 通用节 ── */
+  section{padding:72px 0}
+  .sec-head{text-align:center;margin-bottom:44px}
+  .sec-head h2{font-size:30px;font-weight:800;letter-spacing:-.3px}
+  .sec-head p{margin-top:10px;color:var(--ink-3);font-size:15px}
+
+  /* ── 特性网格 ── */
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  @media(max-width:960px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px 22px;box-shadow:var(--shadow);transition:transform .18s ease,box-shadow .18s ease}
+  .card:hover{transform:translateY(-4px);box-shadow:0 4px 8px rgba(28,39,51,.05),0 16px 36px rgba(28,39,51,.09)}
+  .card .ico{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#e8f0fd,#f3f8ff);color:var(--blue);margin-bottom:14px}
+  .card .ico svg{width:22px;height:22px}
+  .card h3{font-size:16px;font-weight:700;margin-bottom:6px}
+  .card p{font-size:13.5px;color:var(--ink-3)}
+
+  /* ── 隐私横幅 ── */
+  .privacy{background:#0f1c30;color:#e8eefc;border-radius:22px;padding:52px 40px;text-align:center}
+  .privacy h2{font-size:26px;font-weight:800}
+  .privacy p{margin-top:12px;color:#9fb2cd;max-width:620px;margin-left:auto;margin-right:auto;font-size:15px}
+  .privacy .row{margin-top:26px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .pill{font-size:13.5px;padding:7px 18px;border-radius:999px;background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.14);color:#cfe0f7}
+
+  /* ── 更新日志 ── */
+  .log{max-width:760px;margin:0 auto}
+  .log-item{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 26px;margin-bottom:14px;box-shadow:var(--shadow)}
+  .log-item .t{display:flex;align-items:baseline;gap:12px}
+  .log-item .v{font-weight:800;font-size:17px;color:var(--blue)}
+  .log-item .d{font-size:13px;color:var(--ink-3)}
+  .log-item ul{margin:10px 0 0 18px;color:var(--ink-2);font-size:14px}
+  .log-item li{margin:3px 0}
+
+  /* ── FAQ ── */
+  .faq{max-width:760px;margin:0 auto}
+  details{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:16px 22px;margin-bottom:12px;box-shadow:var(--shadow)}
+  summary{cursor:pointer;font-weight:700;font-size:15px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";font-size:20px;color:var(--ink-3);transition:transform .2s}
+  details[open] summary::after{transform:rotate(45deg)}
+  details .a{margin-top:10px;color:var(--ink-2);font-size:14px}
+
+  /* ── 页脚 ── */
+  footer{border-top:1px solid var(--line);padding:36px 0 48px;color:var(--ink-3);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .sha{font-family:ui-monospace,Consolas,monospace;font-size:11.5px;word-break:break-all;color:#93a3b5;max-width:640px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#"><img src="lightsee-icon.png" alt="尽览图标">尽览 <span style="color:var(--ink-3);font-weight:400">LightSee</span></a>
+    <div class="links">
+      <a href="#features">功能</a>
+      <a href="#changelog">更新日志</a>
+      <a href="#faq">常见问题</a>
+      <a href="#download" style="color:var(--blue);font-weight:600">下载</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>你的本地照片管家</h1>
+    <p class="sub">尽览把 ACDSee 的看图习惯和 Apple 的清爽设计放在了一起：左边文件夹、右边缩略图墙、双击看大图，顺手把照片整理得清清楚楚。</p>
+    <div class="badges">
+      <span class="badge ver" id="verBadge">v1.4.1</span>
+      <span class="badge">无广告</span>
+      <span class="badge">不联网</span>
+      <span class="badge">照片数据不出你的电脑</span>
+      <span class="badge">绿色便携</span>
+    </div>
+    <div class="cta" id="download">
+      <!-- REPLACE_GITHUB -->
+      <a class="btn btn-primary" href="https://github.com/xdong2099/LightSee/releases/latest">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Windows 下载
+      </a>
+      <!-- 国内网盘镜像：注册蓝奏云后把 href 替换为分享地址（REPLACE_MIRROR） -->
+      <a class="btn btn-ghost" href="#" onclick="return false;">国内网盘下载</a>
+    </div>
+    <p class="hint">Windows 10 / 11 · x64 · 首次运行如提示缺少环境，装一下免费的微软 .NET 桌面运行时即可</p>
+
+    <div class="shot-frame">
+      <div class="shot-bar"><i></i><i></i><i></i></div>
+      <div class="shot-body" data-empty="把主界面截图命名为 main.png 放入 shots 目录，这里会自动显示">
+        <img src="shots/main.png" alt="尽览主界面" onerror="this.parentElement.classList.add('empty');this.remove()">
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>看图快，整理省心</h2>
+      <p>几万张图的大文件夹也不卡：只渲染屏幕里看得见的那部分</p>
+    </div>
+    <div class="grid">
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+        <h3>缩略图墙与查看器</h3>
+        <p>小/中/大三档切换，双击进大图：滚轮缩放、拖动平移、预加载翻页几乎无等待，空格键放幻灯片。</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <h3>星级 · 色标 · 标签</h3>
+        <p>数字键 0-5 打星，右键贴彩色圆点和文字标签；"智能相册"按规则自动精选，不用手动挑。</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <h3>按人物整理</h3>
+        <p>本地人脸聚类，长得像的自动归成一个人；重命名、合并、忽略都支持。识别在本机完成，数据不上传。</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <h3>智能查找</h3>
+        <p>图片内文字搜索（OCR）、重复照片查找、按画面主色调筛选——找一张"蓝色调的海"选蓝色就好。</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg></div>
+        <h3>照片地图</h3>
+        <p>带定位的照片自动上地图，卫星图查看，悬停看缩略图与地名，点标记直接看大图。</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="1.5"/><circle cx="17.5" cy="10.5" r="1.5"/><circle cx="8.5" cy="7.5" r="1.5"/><circle cx="6.5" cy="12.5" r="1.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></div>
+        <h3>七套皮肤</h3>
+        <p>晴空蓝、深海蓝调、翡翠玉髓、落日橙……每套皮肤配一幅专属艺术画融入窗口，换肤即换心情。</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a2.12 2.12 0 0 1 3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+        <h3>批处理与隐私保护</h3>
+        <p>批量重命名、格式转换、压缩；一键剥除照片里的 GPS 定位等隐私信息，加水印也顺手。</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></div>
+        <h3>绿色便携</h3>
+        <p>不写注册表垃圾、无后台进程、无自启动；配置跟软件走，换电脑拷走整个文件夹就行。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:8px">
+  <div class="wrap">
+    <div class="privacy">
+      <h2>隐私，是本分</h2>
+      <p>浏览、看图、整理、OCR、人脸识别全部在本机完成。不弹广告、不上传照片、不需要登录。</p>
+      <div class="row">
+        <span class="pill">JPG 无损旋转 · 画质零损失</span>
+        <span class="pill">广色域照片自动校色</span>
+        <span class="pill">最近删除 · 30 天可找回</span>
+        <span class="pill">GIF 逐帧查看</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="changelog">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>更新日志</h2>
+      <p>持续打磨，完整日志见安装包内 README</p>
+    </div>
+    <div class="log">
+      <div class="log-item">
+        <div class="t"><span class="v" id="logVer">v1.4.1</span><span class="d">2026-09-22</span></div>
+        <ul><li>全代码严格审计：修复标签菜单误勾选、启动期索引竞态丢数据、人脸重复扫描累积、删图后孤儿标签/人脸残留等缺陷；多路径提速；编译归零警告</li></ul>
+      </div>
+      <div class="log-item">
+        <div class="t"><span class="v">v1.4.0</span><span class="d">2026-09-21</span></div>
+        <ul><li>全新皮肤背景装饰：每套皮肤配一幅专属 AI 流体艺术画，随窗口自适应，换肤即换画</li></ul>
+      </div>
+      <div class="log-item">
+        <div class="t"><span class="v">v1.3.0</span><span class="d">2026-09-21</span></div>
+        <ul><li>界面焕新：图标全库重绘、控件统一、七套可切换皮肤、海报式"关于"窗口与使用指南</li>
+            <li>照片整理三件套：星级/色标/标签 + 智能相册；新增人物（本地人脸聚类）</li>
+            <li>新增照片地图、智能查找（OCR/重复/颜色）、批处理、收藏夹、最近删除、GIF 逐帧、广色域管理</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" style="padding-top:16px">
+  <div class="wrap">
+    <div class="sec-head"><h2>常见问题</h2></div>
+    <div class="faq">
+      <details>
+        <summary>会联网吗？</summary>
+        <div class="a">平时完全离线。仅三处例外：首次下载人脸识别模型（约 37MB，之后完全离线）、地图功能的底图与地名查询、检查软件更新。浏览、看图、整理、OCR、人脸识别全部在本机完成。</div>
+      </details>
+      <details>
+        <summary>怎么让双击图片默认用尽览打开？</summary>
+        <div class="a">工具栏"关联"按钮，一键注册常用图片格式，同样一键可撤销。</div>
+      </details>
+      <details>
+        <summary>删错照片怎么办？</summary>
+        <div class="a">删除的照片先进软件内"最近删除"（保留 30 天），误删可找回；清空后才进系统回收站。</div>
+      </details>
+      <details>
+        <summary>首次运行提示"Windows 已保护你的电脑"？</summary>
+        <div class="a">软件未购买代码签名证书，SmartScreen 会提示未知发布者：点击"更多信息 → 仍要运行"即可。可用本页/发布页提供的 SHA256 值核对安装包完整性。</div>
+      </details>
+      <details>
+        <summary>是绿色软件吗？</summary>
+        <div class="a">是。不写注册表垃圾（文件关联除外，可一键撤销）、无后台进程、无自启动；配置跟软件走，整个文件夹拷走即可换机使用。</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div>© 2026 XDong · 尽览 LightSee</div>
+      <div style="margin-top:4px">当前版本 <span id="footVer">v1.4.1</span> · 运行环境：Windows 10/11 x64 · .NET 桌面运行时 10</div>
+      <div class="sha" id="shaLine">SHA256：<span id="shaVal">见发布页 SHA256SUMS.txt</span></div>
+    </div>
+    <div><a href="https://github.com/xdong2099/LightSee">GitHub 项目主页</a></div>
+  </div>
+</footer>
+
+<script>
+  const APP_VERSION = '1.4.1';   // publish.ps1 发布时自动同步此行
+  document.getElementById('verBadge').textContent = 'v' + APP_VERSION;
+  document.getElementById('footVer').textContent = 'v' + APP_VERSION;
+  document.getElementById('logVer').textContent  = 'v' + APP_VERSION;
+</script>
+</body>
+</html>
