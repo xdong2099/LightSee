@@ -156,7 +156,7 @@
         Windows 下载
       </a>
       <!-- 国内网盘镜像：蓝奏云（不限速，免登录下载） -->
-      <a class="btn btn-ghost" href="https://wwbww.lanzouq.com/injkU49hc40h">国内网盘下载</a>
+      <a class="btn btn-ghost" href="https://wwbww.lanzouq.com/i6lWp49iqule">国内网盘下载</a>
     </div>
     <p class="hint">Windows 10 / 11 · x64 · 首次运行如提示缺少环境，装一下免费的微软 .NET 桌面运行时即可</p>
 
@@ -243,7 +243,15 @@
     </div>
     <div class="log">
       <div class="log-item">
-        <div class="t"><span class="v" id="logVer">v1.4.1</span><span class="d">2026-09-22</span></div>
+        <div class="t"><span class="v" id="logVer">v1.6.0</span><span class="d">2026-09-22</span></div>
+        <ul><li>修改照片尺寸全面升级：宽高输入框美化并自动预填基准图尺寸、宽高智能联动等比、新增"按比例缩放"模式（25%–200% 预设一键）、多图按统一基准侧缩放</li></ul>
+      </div>
+      <div class="log-item">
+        <div class="t"><span class="v">v1.5.0</span><span class="d">2026-09-22</span></div>
+        <ul><li>新增修改照片尺寸功能：按目标宽高等比缩放、可指定输出目录（原图不动）、保持原格式（JPEG 质量可调）、支持仅缩小不放大；入口在工具菜单与图片右键菜单</li></ul>
+      </div>
+      <div class="log-item">
+        <div class="t"><span class="v">v1.4.1</span><span class="d">2026-09-22</span></div>
         <ul><li>全代码严格审计：修复标签菜单误勾选、启动期索引竞态丢数据、人脸重复扫描累积、删图后孤儿标签/人脸残留等缺陷；多路径提速；编译归零警告</li></ul>
       </div>
       <div class="log-item">
@@ -300,7 +308,7 @@
 </footer>
 
 <script>
-  const APP_VERSION = '1.4.1';   // publish.ps1 发布时自动同步此行
+  const APP_VERSION = '1.6.0';   // publish.ps1 发布时自动同步此行
   document.getElementById('verBadge').textContent = 'v' + APP_VERSION;
   document.getElementById('footVer').textContent = 'v' + APP_VERSION;
   document.getElementById('logVer').textContent  = 'v' + APP_VERSION;
