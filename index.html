@@ -155,8 +155,8 @@
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Windows 下载
       </a>
-      <!-- 国内网盘镜像：蓝奏云（不限速，免登录下载） -->
-      <a class="btn btn-ghost" href="https://wwbww.lanzouq.com/i4KNT49qj0ba">国内网盘下载</a>
+      <!-- GitHub 直链下载（蓝奏云镜像待 v1.8.0 上传后替换） -->
+      <a class="btn btn-ghost" href="https://github.com/xdong2099/LightSee/releases/download/v1.8.0/LightSee_v1.8.0_win-x64.zip">GitHub 直链下载</a>
     </div>
     <p class="hint">Windows 10 / 11 · x64 · 首次运行如提示缺少环境，装一下免费的微软 .NET 桌面运行时即可</p>
 
@@ -243,7 +243,11 @@
     </div>
     <div class="log">
       <div class="log-item">
-        <div class="t"><span class="v" id="logVer">v1.7.0</span><span class="d">2026-09-24</span></div>
+        <div class="t"><span class="v" id="logVer">v1.8.0</span><span class="d">2026-09-25</span></div>
+        <ul><li>新增缩略图悬停气泡：鼠标悬停照片卡片弹出气泡显示拍摄详情（拍摄人、日期、时间、经纬度、设备型号），气泡配色跟随当前皮肤</li></ul>
+      </div>
+      <div class="log-item">
+        <div class="t"><span class="v">v1.7.0</span><span class="d">2026-09-24</span></div>
         <ul><li>修改照片尺寸对话框优化：输入框紧凑化与比例框加宽、新增滑杆调比例（25%~200% 双向联动）；关于窗口新增 GitHub 主页链接；全局极光滑杆样式</li></ul>
       </div>
       <div class="log-item">
@@ -312,7 +316,7 @@
 </footer>
 
 <script>
-  const APP_VERSION = '1.7.0';   // publish.ps1 发布时自动同步此行
+  const APP_VERSION = '1.8.0';   // publish.ps1 发布时自动同步此行
   document.getElementById('verBadge').textContent = 'v' + APP_VERSION;
   document.getElementById('footVer').textContent = 'v' + APP_VERSION;
   document.getElementById('logVer').textContent  = 'v' + APP_VERSION;
