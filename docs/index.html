@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>尽览 LightSee · 轻量快捷的本地图片浏览与管理工具</title>
-<meta name="description" content="尽览 LightSee：Windows 本地看图软件。无广告、不联网、照片数据不出你的电脑。缩略图墙、星级/色标/标签、人脸聚类、OCR 搜索、照片地图、七套皮肤。">
+<meta name="description" content="尽览 LightSee：轻量快捷的本地 Windows 看图软件。无广告、不联网、照片数据不出你的电脑。缩略图墙、星级/色标/标签、智能相册、人脸聚类、OCR 搜索、重复查重、照片地图、批量改名、格式转换，几万张图不卡，绿色便携。">
 <!--
   ════════════════════════════════════════════════════════════
   尽览官网（GitHub Pages）· 使用说明
@@ -141,7 +141,7 @@
 <header class="hero">
   <div class="wrap">
     <h1>你的本地照片管家</h1>
-    <p class="sub">尽览把 ACDSee 的看图习惯和 Apple 的清爽设计放在了一起：左边文件夹、右边缩略图墙、双击看大图，顺手把照片整理得清清楚楚。</p>
+    <p class="sub">尽览把 ACDSee 的看图习惯和 Apple 的清爽设计放在了一起：左边文件夹、右边缩略图墙、双击看大图，一用就会。几万张图的大文件夹也不卡，星级/色标/标签、智能相册、人脸聚类、OCR 搜索、照片地图一应俱全，纯绿色、无广告、不联网，照片数据不出你的电脑。</p>
     <div class="badges">
       <span class="badge ver" id="verBadge">v1.4.1</span>
       <span class="badge">无广告</span>
@@ -155,8 +155,8 @@
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Windows 下载
       </a>
-      <!-- 国内网盘镜像：蓝奏云（不限速，免登录下载） -->
-      <a class="btn btn-ghost" href="https://wwbww.lanzouq.com/i6lWp49iqule">国内网盘下载</a>
+      <!-- 备用下载：GitHub Release 官方直链（无提取码） -->
+      <a class="btn btn-ghost" href="https://github.com/xdong2099/LightSee/releases/download/v2.0.0/LightSee_v2.0.0_win-x64.zip">GitHub 直链下载</a>
     </div>
     <p class="hint">Windows 10 / 11 · x64 · 首次运行如提示缺少环境，装一下免费的微软 .NET 桌面运行时即可</p>
 
@@ -243,7 +243,31 @@
     </div>
     <div class="log">
       <div class="log-item">
-        <div class="t"><span class="v" id="logVer">v1.4.1</span><span class="d">2026-09-22</span></div>
+        <div class="t"><span class="v" id="logVer">v2.0.0</span><span class="d">2026-10-19</span></div>
+        <ul><li>整体打磨与新增查看器细节功能：工具栏新增「适合宽度」一键适配宽屏；底部新增胶片缩略条开关，快速切换前后图片；EXIF 元数据面板与细节放大镜可独立开关</li></ul>
+      </div>
+      <div class="log-item">
+        <div class="t"><span class="v">v1.9.0</span><span class="d">2026-10-03</span></div>
+        <ul><li>新增框选区域 OCR 识别并自动去空格；图片压缩副本保存于源文件同文件夹；大幅提升启动速度至秒级</li></ul>
+      </div>
+      <div class="log-item">
+        <div class="t"><span class="v">v1.8.0</span><span class="d">2026-09-25</span></div>
+        <ul><li>新增缩略图悬停气泡：鼠标悬停照片卡片弹出气泡显示拍摄详情（拍摄人、日期、时间、经纬度、设备型号），气泡配色跟随当前皮肤</li></ul>
+      </div>
+      <div class="log-item">
+        <div class="t"><span class="v">v1.7.0</span><span class="d">2026-09-24</span></div>
+        <ul><li>修改照片尺寸对话框优化：输入框紧凑化与比例框加宽、新增滑杆调比例（25%~200% 双向联动）；关于窗口新增 GitHub 主页链接；全局极光滑杆样式</li></ul>
+      </div>
+      <div class="log-item">
+        <div class="t"><span class="v">v1.6.0</span><span class="d">2026-09-22</span></div>
+        <ul><li>修改照片尺寸全面升级：宽高输入框美化并自动预填基准图尺寸、宽高智能联动等比、新增"按比例缩放"模式（25%–200% 预设一键）、多图按统一基准侧缩放</li></ul>
+      </div>
+      <div class="log-item">
+        <div class="t"><span class="v">v1.5.0</span><span class="d">2026-09-22</span></div>
+        <ul><li>新增修改照片尺寸功能：按目标宽高等比缩放、可指定输出目录（原图不动）、保持原格式（JPEG 质量可调）、支持仅缩小不放大；入口在工具菜单与图片右键菜单</li></ul>
+      </div>
+      <div class="log-item">
+        <div class="t"><span class="v">v1.4.1</span><span class="d">2026-09-22</span></div>
         <ul><li>全代码严格审计：修复标签菜单误勾选、启动期索引竞态丢数据、人脸重复扫描累积、删图后孤儿标签/人脸残留等缺陷；多路径提速；编译归零警告</li></ul>
       </div>
       <div class="log-item">
@@ -300,7 +324,7 @@
 </footer>
 
 <script>
-  const APP_VERSION = '1.6.0';   // publish.ps1 发布时自动同步此行
+  const APP_VERSION = '2.0.0';   // publish.ps1 发布时自动同步此行
   document.getElementById('verBadge').textContent = 'v' + APP_VERSION;
   document.getElementById('footVer').textContent = 'v' + APP_VERSION;
   document.getElementById('logVer').textContent  = 'v' + APP_VERSION;
